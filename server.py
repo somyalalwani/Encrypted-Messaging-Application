@@ -13,9 +13,10 @@ class User:
     def add_group(self, group):
         self.groups.append(group)
     
-    def update_socket(self,client, addr):
+    def update_socket(self,client, addr, port):
         self.socket = client
         self.addr = addr
+        self.port = port
 
 
 def rcv(client,username):
@@ -58,10 +59,13 @@ def client_handle(client,addr):
         username = client.recv(8).decode("utf-8")
         client.send(bytes('Enter Password','utf-8'))
         password = client.recv(8).decode("utf-8")
+        client.send(bytes('Enter Port','utf-8'))
+        port= client.recv(8).decode("utf-8")
+        Username_and_Port[username] = port
         if username in Username_and_Passwords.keys() and Username_and_Passwords[username] == password:
             client.send(bytes('Login Successful','utf-8'))
             Current_user = [x for x in Users if username == x.username][0]
-            Current_user.update_socket(client,addr)
+            Current_user.update_socket(client,addr,port)
             client_chat(client,username)
         elif username not in Username_and_Passwords.keys():
             client.send(bytes('Username does not exist','utf-8'))

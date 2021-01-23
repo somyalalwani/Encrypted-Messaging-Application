@@ -1,5 +1,6 @@
 import socket
 from threading import Thread
+import pyDH
 
 def rcv():
     while True:
@@ -10,10 +11,12 @@ def msg_peer(peer_port,msg):
     peer_info = (peer_ip,int(peer_port))
     server_peer = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     server_peer.connect(peer_info)
+    DH1 = pyDH.DiffieHellman()
+    DH1_publickey = DH1.gen_public_key()
+    print(DH1_publickey)
+    server_peer.send(bytes(str(DH1_publickey),'utf-8'))
     server_peer.send(bytes(msg,'utf-8'))
     server_peer.close()
-
-
 
 
 def send(username):
@@ -47,10 +50,11 @@ def chat(username,portno):
 def wait_for_connection(peer_server):
     while True:
         client, addr = peer_server.accept()
-        #client.send(bytes('Connection Established','utf-8'))
-        print(client.recv(1024).decode("utf-8"))
-        #CLIENT_THREAD = Thread(target=rcv_msg,args=(client,))
-        #CLIENT_THREAD.start()
+        DH2 = pyDH.DiffieHellman()
+        DH2_publickey = client.recv(1024).decode("utf-8")
+        shared_key = DH2.gen_shared_key(int(DH2_publickey))
+        msg = client.recv(1024).decode("utf-8")
+        print(msg)
 
 def start_server(portno):
     PORT1 = int(portno)
@@ -103,9 +107,11 @@ def login():
         print(server.recv(1024).decode("utf-8"))
         password = input()
         server.send(bytes(password,'utf-8'))
+        print(server.recv(1024).decode("utf-8"))
+        port_no = input()
+        server.send(bytes(port_no,'utf-8'))
         server_response = server.recv(1024).decode("utf-8")
         print(server_response)
-        port_no = 15000
     return server_response,username,port_no
 
 server_response,username,portno = login()
