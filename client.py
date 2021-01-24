@@ -13,8 +13,11 @@ def msg_peer(peer_port,msg):
     server_peer.connect(peer_info)
     DH1 = pyDH.DiffieHellman()
     DH1_publickey = DH1.gen_public_key()
-    print(DH1_publickey)
     server_peer.send(bytes(str(DH1_publickey),'utf-8'))
+    F_publickey = server_peer.recv(1024).decode("utf-8")
+
+    #key for symmetric key encryption
+    DH1_secretkey = DH1.gen_shared_key(int(F_publickey))
     server_peer.send(bytes(msg,'utf-8'))
     server_peer.close()
 
@@ -51,8 +54,12 @@ def wait_for_connection(peer_server):
     while True:
         client, addr = peer_server.accept()
         DH2 = pyDH.DiffieHellman()
-        DH2_publickey = client.recv(1024).decode("utf-8")
-        shared_key = DH2.gen_shared_key(int(DH2_publickey))
+        DH2_publickey = DH2.gen_public_key()
+        R_publickey = client.recv(1024).decode("utf-8")
+        client.send(bytes(str(DH2_publickey),'utf-8'))
+
+        #key for symmetric key decryption
+        shared_key2 = DH2.gen_shared_key(int(R_publickey))
         msg = client.recv(1024).decode("utf-8")
         print(msg)
 
