@@ -19,8 +19,12 @@ class DiffieHellman:
 	""" Class to represent the Diffie-Hellman key exchange protocol """
 	# Current minimum recommendation is 2048 bit.
 	def __init__(self):
-		self.p = primes[14]["prime"]
-		self.g = primes[14]["generator"]
+		if group in primes:
+			self.p = primes[14]["prime"]
+			self.g = primes[14]["generator"]
+		else:
+			raise Exception("Group not supported")
+
 		self.__a = int(binascii.hexlify(os.urandom(32)), base=16)
 
 	def get_private_key(self):
