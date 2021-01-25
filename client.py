@@ -36,10 +36,9 @@ def msg_peer(peer_port,msg):
 def send(username):
     while True:
         msg_send = input()
+
         command,msg = msg_send.split(maxsplit=1)
-        if(command == "create_group"):
-            pass
-        else:
+        if (command!="create" and command!="group" and command!="join" and command!="list"):
             server.send(bytes(command,'utf-8'))
             details = server.recv(1024).decode("utf-8")
             #print(details)
@@ -47,6 +46,29 @@ def send(username):
             message = "-----------\n "+username+':"'+msg+'" \n-----------\n'
             msg_peer(portno,message)
 
+        elif(command=="create"):
+            server.send(bytes(str(command) + " " + str(msg),'utf-8'))
+            details = server.recv(1024).decode("utf-8") #key recvd
+            print("Key recvd : "+ details)
+        
+        elif(command=="list"):
+            server.send(bytes(str(command)+" "+ str(msg),'utf-8'))
+            details = server.recv(1024).decode("utf-8")
+            print(details)
+        
+        elif(command=="join"):
+            server.send(bytes(str(command) + " "+ str(msg),'utf-8'))
+            details = server.recv(1024).decode()
+            print("Key recvd: " + details)        
+        else:
+            server.send(bytes(str(command) + " "+ str(msg),'utf-8'))
+            details = server.recv(1024).decode()
+            print(details)
+            kk=input()
+            server.send(kk.encode())
+            details = server.recv(1024).decode()
+            print(details)
+            
 
 def rcv_msg(client):
     print(client.recv(1024).decode("utf-8")) 
@@ -58,6 +80,7 @@ def chat(username,portno):
     SEND_THREAD.start()
     #RCV_THREAD.start()
     MSGS_THREAD.start()
+
 
 def wait_for_connection(peer_server):
     while True:
