@@ -167,7 +167,6 @@ def send(username):
 
         elif(command=="join"):
             server.send(bytes(str(command) + " "+ str(msg),'utf-8'))
-            print("Yo")
             admin_port = server.recv(10).decode()
             print(admin_port)
             
