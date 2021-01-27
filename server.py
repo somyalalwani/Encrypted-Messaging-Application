@@ -114,18 +114,18 @@ def rcv(client,username):
                         client.send(admin_port.encode())
                         print("***************Group joined********************")
                 if(i==len(Group_lists)):
-                    Group_lists.append(Groups(msg,username))
+                    # Group_lists.append(Groups(msg,username))
+                    client.send(("not").encode())
                     """
                     for obj in Group_lists:
                         if obj.group_name == groupname :
                             y=str(obj.key)
                             client.send(y.encode())
                     """
-                    for obj in Users:
-                        if obj.username==username:
-                            obj.groups.append(msg)
+                    # for obj in Users:
+                    #     if obj.username==username:
+                    #         obj.groups.append(msg)
                     print("***********Group created****************")
-                    client.send("Group creation Successful! Generate a key :".encode())
 
             elif(command=="list"):
                 data = {}
@@ -133,6 +133,7 @@ def rcv(client,username):
                 for x in Group_lists:
                     data[x.group_name] = len(x.members)
                 #length=int(len(data))
+                print(data)
                 client.send(str(data).encode())
                 
 
