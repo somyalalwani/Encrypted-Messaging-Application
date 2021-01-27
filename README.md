@@ -1,17 +1,17 @@
 # End to End messaging system like WhatsApp
 
-Design an end to end messaging system like WhatsApp with the below functionalities:.
-- Multiclient chat application that has a server component and 4 clients [atleast].
-- The system supports the signup and sign in feature. [error message with wrong credentials].
-- User can send message to other user [p2p message] [ SEND command] [<SEND> <USERNAME> <MESSAGE>]
-- Each user can join multiple chat rooms (groups) at a time.
-- Each user can list all the groups. [LIST Command] [show all group and number of participants in each group]
-- Each user can join a group [JOIN command]. If the group does not exist then the first create it then joins it.
-- Each user can create a group [CREATE command].
-- If one user sends a message to a group it should be sent to all members of that group.
-- The message is encrypted using Tripple DES (3DES) and the key will be Diffie–Hellman key type exchanged between clients.
-- For each group make one key (random nonce).
-- Message can be any type, for example, text, images, video, and audio.
+The below functionalities are designed using following commands:
+1. **Multiclient chat application** that has a server component and as many no. of clients.
+2. The system supports the **signup and sign in** feature.
+3. User can send message to other user [p2p message] : **send <USERNAME> <MESSAGE>**
+4. Each user can **join multiple chat rooms (groups) at a time**. 
+5. Each user can **list all the groups** (show all group and number of participants in each group) : <list groups>
+6. Each user can **join a group** using <join group_name>. If the group does not exist then the first create it then joins it.
+7. Each user can **create a group** using <create groupname>.
+8. If one user sends a message to a group it should be sent to all members of that group.
+9. **The message is encrypted using Tripple DES (3DES) and the key will be Diffie–Hellman key type exchanged between clients.**
+10. **For each group one key (random nonce) is generated and messages are encrypted through this key and sent to each user.**
+11. Message can be any type, for example, text, images, video, and audio.
 
 ##### LIST OF COMMANDS:
 - Send a message to User: SEND <USERNAME> <MESSAGE>
