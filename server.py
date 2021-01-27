@@ -1,6 +1,5 @@
 import socket
 from threading import Thread
-import pyDH
 from Crypto.Cipher import DES3
 
 def pad(msg):

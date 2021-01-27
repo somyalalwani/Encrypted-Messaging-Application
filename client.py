@@ -168,7 +168,6 @@ def send(username):
         elif(command=="join"):
             server.send(bytes(str(command) + " "+ str(msg),'utf-8'))
             admin_port = server.recv(10).decode()
-            print(admin_port)
             
             if admin_port != "not":
                 peer_ip = socket.gethostname()
