@@ -65,7 +65,7 @@ def msg_peer(peer_port,header,msg, isFile):
         msgtype = "text"
         server_peer.send(msgtype.encode())
         #Encrypting Message
-        DH1 = pyDH.DiffieHellman()
+        DH1 = pyDH.DiffieHellman(username)
         DH1_publickey = DH1.gen_public_key()
         server_peer.send(bytes(str(DH1_publickey),'utf-8'))
         F_publickey = server_peer.recv(1024).decode("utf-8")
@@ -78,7 +78,7 @@ def msg_peer(peer_port,header,msg, isFile):
         msgtype = "file"
         server_peer.send(msgtype.encode())
         server_peer.send(header)
-        DH1 = pyDH.DiffieHellman()
+        DH1 = pyDH.DiffieHellman(username)
         DH1_publickey = DH1.gen_public_key()
         server_peer.send(bytes(str(DH1_publickey),'utf-8'))
         F_publickey = server_peer.recv(1024).decode("utf-8")
@@ -236,7 +236,7 @@ def rcv_msg(client):
     # print(header)	
     list1 = header.split(' ')	
     if 'file' in header:	
-        DH2 = pyDH.DiffieHellman()	
+        DH2 = pyDH.DiffieHellman(username)	
         DH2_publickey = DH2.gen_public_key()	
         R_publickey = client.recv(1024).decode("utf-8")	
         client.send(bytes(str(DH2_publickey),'utf-8'))	
@@ -279,7 +279,7 @@ def wait_for_connection(peer_server):
          filetype = filetype.decode()
          #print(filetype)
          if filetype == "text":
-             DH2 = pyDH.DiffieHellman()
+             DH2 = pyDH.DiffieHellman(username)
              DH2_publickey = DH2.gen_public_key()
              R_publickey = client.recv(1024).decode("utf-8")
              client.sendall(bytes(str(DH2_publickey),'utf-8'))

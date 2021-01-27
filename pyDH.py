@@ -14,14 +14,20 @@ primes = {
 	},
 }
 
+def pad(msg):
+	if len(msg) >= 32:
+		return msg[:32]
+	while len(msg) != 32:
+		msg += ' '
+	return msg 
 
 class DiffieHellman:
 	""" Class to represent the Diffie-Hellman key exchange protocol """
 	# Current minimum recommendation is 2048 bit.
-	def __init__(self):
+	def __init__(self,username):
 		self.p = primes[14]["prime"]
 		self.g = primes[14]["generator"]
-		self.__a = int(binascii.hexlify(os.urandom(32)), base=16)
+		self.__a = int(binascii.hexlify(bytes(pad(username).encode())), base=16)
 
 	def get_private_key(self):
 		""" Return the private key (a) """
