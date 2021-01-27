@@ -40,7 +40,7 @@ Design an end to end messaging system like WhatsApp with the below functionaliti
 - sys
 - base64
 
-#### Team Members
+#### TEAM MEMBERS
 * Anchal Soni - 2020201099
 * Param Pujara - 2020202008
 * Somya Lalwani - 2020201092
