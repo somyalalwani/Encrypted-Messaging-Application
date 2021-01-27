@@ -40,7 +40,9 @@ class Groups:
 
 def rcv(client,username):
     while True:
-        msg_rcvd = client.recv(1024).decode("utf-8")
+        msg_rcvd = client.recv(1024)
+        print(msg_rcvd)
+        msg_rcvd=msg_rcvd.decode("utf-8")
         #(recipient, msg1) = msg_rcvd.split(maxsplit=1)
         #print(msg_rcvd)
         if not(msg_rcvd.startswith("create") or msg_rcvd.startswith("group") or msg_rcvd.startswith("join") or msg_rcvd.startswith("list")):
@@ -62,18 +64,46 @@ def rcv(client,username):
                 client.send(bytes("Group creation Successful! Generate a key :",'utf-8'))
 
 
-            elif(command=="group"): #msg=groupname msg # command=group
-                i=0
-                groupname=msg
-                msg1 = client.recv(1048576)
-                for i in range(len(Group_lists)):
-                    if(Group_lists[i].group_name==groupname):
-                        if username in Group_lists[i].members:
-                            send1("group",username,groupname,msg1) 
-                            client.send("Message sent without encryption".encode())
-                            print("***********Message sent****************")
-                        else:
-                            client.send("You are not part of the group".encode())
+            elif(command=="group"): #msg=groupname file filename # command=group
+                if "file" in msg:
+                    
+                    grpname,txt,filename=msg.split(maxsplit=2)
+                    
+                    filecontent=None
+                    newfilename= "new_"+filename
+                    filesize = int(client.recv(1024).decode())
+                    
+                    aa=client.recv(filesize)
+                    print(filesize,aa)
+                    with open(newfilename,"wb") as F:
+                        F.write(aa)
+                        
+
+                    i=0
+                    #groupname = msg.split(maxsplit=1)[0] 
+                    for i in range(len(Group_lists)):
+                        if(Group_lists[i].group_name==grpname):
+                            if username in Group_lists[i].members:
+                                send1("group",username,grpname,filecontent,True,newfilename) 
+                                #client.send("Message sent without encryption".encode())
+                                print("***********Message sent****************")
+                            else:
+                                #client.send("You are not part of the group".encode())
+                                pass    
+                else:    
+                    i=0
+                    groupname=msg.split(maxsplit=1)[0]
+                    msg1 = client.recv(1048576)
+                    for i in range(len(Group_lists)):
+                        if(Group_lists[i].group_name==groupname):
+                            if username in Group_lists[i].members:
+                                send1("group",username,groupname,msg1) 
+                                #client.send("Message sent!!".encode())
+                                print("***********Message sent****************")
+                            else:
+                                #client.send("You are not part of the group".encode())
+                                pass
+
 
             elif(command=="join"): #msg=group ka naam
                 i=0
@@ -84,7 +114,7 @@ def rcv(client,username):
                         client.send(admin_port.encode())
                         print("***************Group joined********************")
                 if(i==len(Group_lists)):
-                    Group_lists[i].append(Groups(groupname,username))
+                    Group_lists.append(Groups(msg,username))
                     """
                     for obj in Group_lists:
                         if obj.group_name == groupname :
@@ -124,10 +154,8 @@ def msg_peer1(peer_port,msg):
     DH1_publickey = DH1.gen_public_key()
     server_peer.send(bytes(str(DH1_publickey),'utf-8'))
     F_publickey = server_peer.recv(1024).decode("utf-8")
-
     #key for symmetric key encryption
     DH1_secretkey = DH1.gen_shared_key(int(F_publickey))
-
     #Encrypting Message
     msg = pad(msg)
     cipher = DES3.new(str(DH1_secretkey)[0:24], DES3.MODE_ECB)
@@ -138,9 +166,8 @@ def msg_peer1(peer_port,msg):
     # server_peer.close()
 
 
-def send1(txt,client,groupname,msg):
-    
-    if(txt=="group"):
+def send1(txt,client,groupname,msg,isFile=False,filename=" "):    
+    if(txt=="group" and isFile==False):
         for obj in Group_lists:
             if obj.group_name==groupname:
                 txt="grup"
@@ -157,6 +184,32 @@ def send1(txt,client,groupname,msg):
                         server_peer.send(msg2.encode())
                         server_peer.send(msg)
                         server_peer.close()
+
+    elif(txt=="group" and isFile==True):
+        for obj in Group_lists:
+            if obj.group_name==groupname:
+                txt="gruf"
+                msg2 = str(groupname) + " [" + str(client) +"] : 11_" +str(filename)+"*'del"
+                msg2 = pad(msg2) 
+                for mem in obj.members:    
+                    if mem != client:
+                        peer_port = Username_and_Port[mem]
+                        peer_ip = socket.gethostname()
+                        peer_info = (peer_ip,int(peer_port))
+                        server_peer = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                        server_peer.connect(peer_info)
+                        server_peer.send(txt.encode())
+                        server_peer.send(msg2.encode())
+                        with open(filename, "rb") as F:
+                            content = F.read(1024)
+                            while(content):
+                                server_peer.send(content)
+                                content = F.read(1024)
+                        F.close()
+                        server_peer.close()
+
+
+
 
 
 def client_chat(client,username):
@@ -201,7 +254,7 @@ Users = []
 
 Username_and_Passwords = {}
 
-PORT = 5507
+PORT = 5500
 server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 ADDR = (socket.gethostname(),PORT)
