@@ -7,7 +7,6 @@ import nacl.secret
 import nacl.utils
 import nacl.pwhash
 import os
-# Do not do "import nacl", it won't work
 import base64
 
 group_key={}
@@ -167,12 +166,12 @@ def send(username):
 
 
         elif(command=="join"):
-            server.sendall(bytes(str(command) + " "+ str(msg),'utf-8'))
-            admin_port = server.recv(1024).decode()
-            print("************:")
+            server.send(bytes(str(command) + " "+ str(msg),'utf-8'))
+            print("Yo")
+            admin_port = server.recv(10).decode()
             print(admin_port)
-            print("************")
-            if admin_port != "Group creation Successful! Generate a key :":
+            
+            if admin_port != "not":
                 peer_ip = socket.gethostname()
                 peer_info = (peer_ip,int(admin_port))
                 server_peer = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -192,24 +191,21 @@ def send(username):
                 
                 
             else:
-                #print("key generation code ayega yaha bs")
-                server.sendall(bytes(str("create") + " " + str(msg),'utf-8'))
+                server.sendall(bytes("create" + " " + str(msg),'utf-8'))
                 details = server.recv(1024).decode("utf-8") #key recvd
                 if(details=="Group creation Successful! Generate a key :"):
                     password = username+msg
-                    keyGen(password,msg)    
-                    print("New Group created & key generated!")
-                    
+                    keyGen(password,msg)
+                print("New Group created & key generated!")
+                
 
         else:
             gname,secret_msg = msg.split(maxsplit=1)
             
             if secret_msg.startswith("file"):
-                print("YESS")
                 filename=secret_msg.split()[1]
                 server.sendall(bytes(str(command) + " "+ str(gname) +" "+"file "+str(filename),'utf-8'))
                 b = os.path.getsize(filename)
-                print(b)
                 server.sendall(str(b).encode())
                 with open(filename, "rb") as F:
                     content = F.read(1024)
@@ -351,6 +347,7 @@ def wait_for_connection(peer_server):
              print(filetype)
              print("message type not recognised!!")
 
+IP = input('Enter server\'s IP address: ')
 PORT = input('Enter server\'s port: ')
 ADDR = (socket.gethostname(),int(PORT))
 
