@@ -1,4 +1,4 @@
-# End to End messaging system like WhatsApp
+# End to End Encrypted Messaging System like WhatsApp
 
 The below functionalities are designed using following commands:
 1. **Multiclient chat application** that has a server component and as many no. of clients.
